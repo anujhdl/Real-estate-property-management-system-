@@ -1,0 +1,152 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered platform user profile with role and saved favourite property IDs.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "authProviderId": { "type": "string", "maxLength": 64 },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "phone": { "type": "string", "maxLength": 30 },
+        "favorites": { "type": "array", "description": "Up to 50 saved property IDs" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "authProviderId", "role", "createdAt"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Real estate listing with specifications, gallery images, amenities, and availability status.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "propertyCode": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "title": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "description": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "price": { "type": "number" },
+        "location": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "city": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "propertyType": {
+          "type": "string",
+          "enum": [
+            "Luxury Villas",
+            "Modern Apartments",
+            "Independent Houses",
+            "Residential Plots",
+            "Commercial Properties",
+            "Premium Penthouses",
+            "Family Homes"
+          ]
+        },
+        "listingType": { "type": "string", "enum": ["Buy", "Rent"] },
+        "bedrooms": { "type": "number" },
+        "bathrooms": { "type": "number" },
+        "area": { "type": "number" },
+        "images": { "type": "array", "description": "1 to 10 property image URLs" },
+        "amenities": { "type": "array", "description": "Up to 25 amenity labels" },
+        "status": { "type": "string", "enum": ["Available", "Reserved", "Sold", "Rented"] },
+        "featured": { "type": "boolean" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "propertyCode",
+        "title",
+        "description",
+        "price",
+        "location",
+        "city",
+        "propertyType",
+        "listingType",
+        "bedrooms",
+        "bathrooms",
+        "area",
+        "images",
+        "amenities",
+        "status",
+        "featured",
+        "createdAt"
+      ]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Prospective buyer or tenant property inquiry with email delivery tracking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "phone": { "type": "string", "minLength": 7, "maxLength": 30 },
+        "propertyId": { "type": "string", "maxLength": 128 },
+        "propertyTitle": { "type": "string", "maxLength": 200 },
+        "inquiryType": {
+          "type": "string",
+          "enum": ["Buying", "Renting", "Site Visit", "General Inquiry"]
+        },
+        "preferredContact": {
+          "type": "string",
+          "enum": ["Phone", "Email", "WhatsApp"]
+        },
+        "message": { "type": "string", "minLength": 5, "maxLength": 2500 },
+        "status": {
+          "type": "string",
+          "enum": ["New", "Contacted", "In Progress", "Closed"]
+        },
+        "emailDeliveryStatus": {
+          "type": "string",
+          "enum": ["sent", "failed", "pending"]
+        },
+        "emailError": { "type": "string", "maxLength": 500 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "fullName",
+        "email",
+        "phone",
+        "propertyId",
+        "propertyTitle",
+        "inquiryType",
+        "preferredContact",
+        "message",
+        "status",
+        "emailDeliveryStatus",
+        "createdAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Authoritative admin role record keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "grantedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "grantedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and saved favourites (PII isolated to owner and admins)."
+    },
+    "/properties/{propertyId}": {
+      "schema": { "$ref": "#/entities/Property" },
+      "description": "Publicly readable real estate listings managed exclusively by admins."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": { "$ref": "#/entities/Inquiry" },
+      "description": "Customer inquiries created by visitors/users and managed by admins."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Trusted list of administrator UIDs."
+    }
+  }
+}

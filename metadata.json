@@ -1,0 +1,6 @@
+{
+  "name": "Aurelia Estates — Real Estate Property Management System",
+  "description": "Full-stack luxury real estate property management platform for buying, renting, comparing, and managing residential and commercial properties across India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
